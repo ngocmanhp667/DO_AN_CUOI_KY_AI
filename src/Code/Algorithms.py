@@ -63,36 +63,35 @@ def simulated_annealing(maze):
 
 def searching_with_no_observation(maze):
     start = (maze.start_x, maze.start_y)
-    goal = (maze.end_x, maze.end_y)
-
     directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # phải, xuống, trái, lên
 
     queue = deque()
     visited = set()
+
     queue.append((start, [start]))
     visited.add(start)
 
     while queue:
         current_pos, path = queue.popleft()
+        x, y = current_pos
 
-        if current_pos == goal:
+        # Nếu đang đứng tại ô đích (được đánh dấu là 2 trong grid)
+        if maze.grid[y][x] == 2:
             return path
 
-        # Bản chất "mù": không quan sát, chỉ thử các hướng
-        random.shuffle(directions)  # để không đi cố định
+        random.shuffle(directions)  # đi ngẫu nhiên
 
         for dx, dy in directions:
-            nx, ny = current_pos[0] + dx, current_pos[1] + dy
+            nx, ny = x + dx, y + dy
             next_pos = (nx, ny)
 
-            # Không dùng get_neighbors, chỉ kiểm tra tường khi "đã bước tới"
+            # Kiểm tra không ra khỏi mê cung và không đi vào tường hoặc ô đã thăm
             if 0 <= nx < maze.width and 0 <= ny < maze.height:
-                if maze.grid[ny][nx] == 0 and next_pos not in visited:
+                if maze.grid[ny][nx] != 1 and next_pos not in visited:
                     visited.add(next_pos)
                     queue.append((next_pos, path + [next_pos]))
 
     return []  # Không tìm được đường
-
 # Thuật toán solve_with_csp
 def solve_with_csp(maze):
     start = (maze.start_x, maze.start_y)
